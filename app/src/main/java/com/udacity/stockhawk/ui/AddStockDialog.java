@@ -6,6 +6,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -16,12 +18,23 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.udacity.stockhawk.R;
+import com.udacity.stockhawk.data.Contract;
+
+import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import yahoofinance.Stock;
+import yahoofinance.YahooFinance;
+import yahoofinance.quotes.stock.StockQuote;
 
 
-public class AddStockDialog extends DialogFragment {
+interface OnDataSendToActivity {
+    public void sendData(Boolean result);
+}
+
+public class AddStockDialog extends DialogFragment implements OnDataSendToActivity{
 
     @SuppressWarnings("WeakerAccess")
     @BindView(R.id.dialog_stock)
@@ -68,10 +81,60 @@ public class AddStockDialog extends DialogFragment {
     private void addStock() {
         Activity parent = getActivity();
         if (parent instanceof MainActivity) {
-            ((MainActivity) parent).addStock(stock.getText().toString());
+            isValidStock(stock.getText().toString());
         }
-        dismissAllowingStateLoss();
+
+    }
+
+    @Override
+    public void sendData(Boolean result) {
+
+        if (result) {
+            ((MainActivity) getActivity()).addStock(stock.getText().toString());
+            dismissAllowingStateLoss();
+        }
+        else {
+            ((MainActivity) getActivity()).showErrorMessage();
+        }
     }
 
 
+
+    private class ValidateStockTask extends AsyncTask<String, Void, Boolean> {
+
+        OnDataSendToActivity dataSendToActivity;
+        public ValidateStockTask(DialogFragment activity){
+            dataSendToActivity = (OnDataSendToActivity)activity;
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            try {
+                Stock stock = YahooFinance.get(params[0]);
+                StockQuote quote = stock.getQuote(true);
+
+                if (quote.getChangeInPercent() != null
+                        && quote.getChange() != null
+                            && quote.getPrice() != null) {
+                    return true;
+                }
+
+                return false;
+            } catch (IOException e1) {
+                e1.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            dataSendToActivity.sendData(result);
+        }
+    }
+
+
+    private void isValidStock(String symbol) {
+        new ValidateStockTask(this).execute(symbol);
+    }
 }
