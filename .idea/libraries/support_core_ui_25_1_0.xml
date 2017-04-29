@@ -1,5 +1,3 @@
-      <root url="jar://$USER_HOME$/.android/build-cache/fbc33b269373fca9cca1fefd1b25649d73c8e850/output/jars/classes.jar!/" />
-      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/support-core-ui/25.1.0/jars/classes.jar!/" />
 <component name="libraryTable">
   <library name="support-core-ui-25.1.0">
     <CLASSES>
