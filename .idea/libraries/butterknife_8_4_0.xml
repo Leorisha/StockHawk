@@ -1,3 +1,4 @@
+      <root url="jar://$USER_HOME$/.android/build-cache/8ead7d0248a1e80eca67063144d5af52d5b8ff91/output/jars/classes.jar!/" />
       <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.jakewharton/butterknife/8.4.0/jars/classes.jar!/" />
 <component name="libraryTable">
   <library name="butterknife-8.4.0">
