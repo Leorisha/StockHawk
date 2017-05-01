@@ -39,9 +39,12 @@ public class AddStockDialog extends DialogFragment implements OnDataSendToActivi
     @SuppressWarnings("WeakerAccess")
     @BindView(R.id.dialog_stock)
     EditText stock;
+    Activity parent;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        parent = getActivity();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -90,11 +93,15 @@ public class AddStockDialog extends DialogFragment implements OnDataSendToActivi
     public void sendData(Boolean result) {
 
         if (result) {
-            ((MainActivity) getActivity()).addStock(stock.getText().toString());
+            if (this.parent instanceof MainActivity) {
+                ((MainActivity) parent).addStock(stock.getText().toString());
+            }
             dismissAllowingStateLoss();
         }
         else {
-            ((MainActivity) getActivity()).showErrorMessage();
+            if (this.parent instanceof MainActivity) {
+                ((MainActivity) parent).showErrorMessage();
+            }
         }
     }
 
@@ -111,15 +118,15 @@ public class AddStockDialog extends DialogFragment implements OnDataSendToActivi
         protected Boolean doInBackground(String... params) {
             try {
                 Stock stock = YahooFinance.get(params[0]);
-                StockQuote quote = stock.getQuote(true);
 
-                if (quote.getChangeInPercent() != null
-                        && quote.getChange() != null
-                            && quote.getPrice() != null) {
-                    return true;
+                if (stock.getCurrency() == null ||
+                        stock.getName() == null ||
+                        stock.getHistory() == null ||
+                        stock.getStockExchange() == null ) {
+                    return false;
                 }
 
-                return false;
+                return true;
             } catch (IOException e1) {
                 e1.printStackTrace();
                 return false;
@@ -128,8 +135,8 @@ public class AddStockDialog extends DialogFragment implements OnDataSendToActivi
 
         @Override
         protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
             dataSendToActivity.sendData(result);
+            super.onPostExecute(result);
         }
     }
 
