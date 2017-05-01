@@ -22,7 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".ui.StockDetailActivity" />
         <service
             android:name=".sync.QuoteIntentService"
             android:exported="false" />
@@ -38,13 +38,20 @@
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <receiver android:name=".widget.StockWidgetProvider" >
+        <receiver android:name=".widget.StockWidgetProvider"
+            android:permission="android.permission.BIND_WIDGET_STOCK_LIST">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.udacity.stockhawk.ACTION_DATA_UPDATED"/>
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/stock_widget_provider_info" />
         </receiver>
+        <service
+            android:name=".widget.StockWidgetRemoteViewService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
     </application>
 
