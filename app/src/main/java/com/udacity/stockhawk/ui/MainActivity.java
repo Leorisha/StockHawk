@@ -1,6 +1,7 @@
 package com.udacity.stockhawk.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
@@ -35,6 +36,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         SwipeRefreshLayout.OnRefreshListener,
         StockAdapter.StockAdapterOnClickHandler {
 
+    public static final String EXTRA_SYMBOL = "extra_symbol";
+    public static final String EXTRA_HISTORY = "extra_history";
+
     private static final int STOCK_LOADER = 0;
     @SuppressWarnings("WeakerAccess")
     @BindView(R.id.recycler_view)
@@ -48,8 +52,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private StockAdapter adapter;
 
     @Override
-    public void onClick(String symbol) {
+    public void onClick(String symbol,String history) {
         Timber.d("Symbol clicked: %s", symbol);
+        Intent detail = new Intent(this, StockDetailActivity.class);
+        detail.putExtra(EXTRA_SYMBOL, symbol);
+        detail.putExtra(EXTRA_HISTORY,history);
+        startActivity(detail);
     }
 
     @Override

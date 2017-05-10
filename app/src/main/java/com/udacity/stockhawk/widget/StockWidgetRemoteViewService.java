@@ -16,6 +16,7 @@ import com.udacity.stockhawk.data.StockProvider;
 import com.udacity.stockhawk.sync.QuoteIntentService;
 import com.udacity.stockhawk.sync.QuoteJobService;
 import com.udacity.stockhawk.sync.QuoteSyncJob;
+import com.udacity.stockhawk.ui.MainActivity;
 
 import java.lang.annotation.Target;
 import java.text.DecimalFormat;
@@ -131,6 +132,12 @@ public class StockWidgetRemoteViewService extends RemoteViewsService {
                 }
 
                 final Intent fillInIntent = new Intent();
+
+                int symbolColumn = data.getColumnIndex(Contract.Quote.COLUMN_SYMBOL);
+                int historyColumn = data.getColumnIndex(Contract.Quote.COLUMN_HISTORY);
+
+                fillInIntent.putExtra(MainActivity.EXTRA_SYMBOL, data.getString(symbolColumn));
+                fillInIntent.putExtra(MainActivity.EXTRA_HISTORY,data.getString(historyColumn));
                 views.setOnClickFillInIntent(R.id.widget_list_item, fillInIntent);
                 return views;
             }
