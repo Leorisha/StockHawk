@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 String symbol = adapter.getSymbolAtPosition(viewHolder.getAdapterPosition());
                 PrefUtils.removeStock(MainActivity.this, symbol);
+                QuoteSyncJob.syncImmediately(MainActivity.this);
                 getContentResolver().delete(Contract.Quote.makeUriForStock(symbol), null, null);
             }
         }).attachToRecyclerView(stockRecyclerView);
@@ -199,6 +200,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     public void showErrorMessage() {
-        Toast.makeText(this,"not a valid stock",Toast.LENGTH_LONG).show();
+        Toast.makeText(this,getResources().getString(R.string.not_a_valid_stock),Toast.LENGTH_LONG).show();
     }
 }

@@ -10,13 +10,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.udacity.stockhawk.R;
 
 import java.lang.reflect.Array;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,6 +36,15 @@ import butterknife.ButterKnife;
 /**
  * Created by ananeto on 29/04/2017.
  */
+
+class DateValueFormatter implements IAxisValueFormatter {
+
+    @Override
+    public String getFormattedValue(float value, AxisBase axis) {
+        Date date = new Date(Float.valueOf(value).longValue());
+        return SimpleDateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault()).format(date);
+    }
+}
 
 public class StockDetailActivity extends AppCompatActivity {
 
@@ -60,35 +74,36 @@ public class StockDetailActivity extends AppCompatActivity {
     private void buildHistoryArrays() {
         String[] values = this.quoteHistory.split("\n");
         ArrayList<Entry> entries = new ArrayList<Entry>();
-        String startingTimeMilis = "";
-        int j = 0;
+
         for (int i = values.length-1; i >= 0; i--) {
 
             String value = values[i];
             String[] valuesInsideValue = value.split(", ");
             // turn your data into Entry objects
             entries.add(new Entry(new Float(valuesInsideValue[0]),Float.parseFloat(valuesInsideValue[1])));
-
-            if (j == 0) {
-                startingTimeMilis = valuesInsideValue[0];
-            }
-
-            j++;
         }
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(Long.parseLong(startingTimeMilis));
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextSize(12f);
+        xAxis.setTextColor(Color.WHITE);
+        xAxis.setLabelCount(5, true);
+        xAxis.setValueFormatter(new DateValueFormatter());
 
-        LineDataSet dataSet = new LineDataSet(entries, "Value over time since " + sdf.format(calendar.getTime()));
-        dataSet.setFillAlpha(65);
-        dataSet.setDrawValues(false);
+        YAxis left = chart.getAxisLeft();
+        left.setEnabled(true);
+        left.setLabelCount(10, true);
+        left.setTextColor(Color.WHITE);
 
-        LineData lineData = new LineData(dataSet);
-        chart.setData(lineData);
+        chart.getAxisRight().setEnabled(false);
+        chart.getLegend().setTextSize(16f);
         Description desc = new Description();
-        desc.setText("Dolar");
+        String name = getResources().getString(R.string.quote_description);
+        desc.setText(name);
         chart.setDescription(desc);
-        chart.invalidate();
+        LineDataSet dataSet = new LineDataSet(entries, this.quoteSymbol);
+        LineData lineData = new LineData(dataSet);
+        chart.animateX(2500);
+        chart.setData(lineData);
     }
 }
