@@ -44,6 +44,7 @@
             android:paddingLeft="3dp"
             android:paddingStart="3dp"
             android:paddingRight="3dp"
+            android:paddingEnd="3dp"
             android:paddingBottom="3dp"
             android:textDirection="anyRtl"
             tools:text="100%" />
